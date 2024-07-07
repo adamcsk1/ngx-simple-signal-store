@@ -1,0 +1,49 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "ngx-simple-signal-store": {
+      "projectType": "library",
+      "root": "projects/ngx-simple-signal-store",
+      "sourceRoot": "projects/ngx-simple-signal-store",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/ngx-simple-signal-store/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ngx-simple-signal-store/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/ngx-simple-signal-store/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "projects/ngx-simple-signal-store/tsconfig.spec.json",
+            "polyfills": ["zone.js", "zone.js/testing"],
+            "karmaConfig": "projects/ngx-simple-signal-store/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["projects/ngx-simple-signal-store/**/*.ts", "projects/ngx-simple-signal-store/**/*.html"],
+            "eslintConfig": "projects/ngx-simple-signal-store/eslint.config.js"
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": "d8b70aec-b698-41d5-8d08-8dac3406d4db",
+    "schematicCollections": ["@angular-eslint/schematics"]
+  }
+}
