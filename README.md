@@ -115,7 +115,7 @@ Return with the readonly state. The returned object keys are the referenced stat
 demoStore.setState('key', 0);
 ```
 
-Sets the sate with a specified key and value.
+Sets the state with a specified key and value.
 
 ## patchState<K extends keyof T>(key: K, data: T[K] | Partial<T[K]>): `void`;
 
@@ -136,10 +136,17 @@ demoStore.patchState('key', {value: 0});
 // The value after patch:  {value: 0}
 ```
 
-Patch the sate with a specified key and value.
+Patch the state with a specified key and value.
 
 A callback function can be used for the complex operations:
 
 ```typescript
 demoStore.patchState('key', state => ({value: state.value + 1}));
 ```
+## resetStore(): `void`;
+
+```typescript
+demoStore.resetStore();
+```
+
+Reset the store to the initial state.

@@ -2,12 +2,14 @@ import { signal } from '@angular/core';
 import { ReadonlyState, State, StateCallback, StateData } from './ngx-simple-signal-store.interface';
 
 export class NgxSimpleSignalStoreService<T> {
+  readonly #initialState: T;
   readonly #state: State<T>;
   readonly state: ReadonlyState<T>;
 
   constructor(initialState: T) {
-    this.#state = this.#createState(initialState);
-    this.state = this.#createRedonlyState();
+    this.#initialState = initialState;
+    this.#state = this.#createState();
+    this.state = this.#createReadonlyState();
   }
 
   public patchState<K extends keyof T>(key: K, callback: StateCallback<T, K>): void;
@@ -28,19 +30,21 @@ export class NgxSimpleSignalStoreService<T> {
     selectedState.set(data);
   }
 
-  #createState(initialState: T): State<T> {
+  public resetStore(): void {
+    for (const key in this.#initialState) this.#state[key].set(this.#initialState[key]);
+  }
+
+  #createState(): State<T> {
     const state: Partial<State<T>> = {};
-    for (const key in initialState) {
-      state[key] = signal(initialState[key]);
-    }
+    for (const key in this.#initialState) state[key] = signal(this.#initialState[key]);
+
     return state as State<T>;
   }
 
-  #createRedonlyState(): ReadonlyState<T> {
+  #createReadonlyState(): ReadonlyState<T> {
     const readonlyState: Partial<ReadonlyState<T>> = {};
-    for (const key in this.#state) {
-      readonlyState[key] = this.#state[key].asReadonly();
-    }
+    for (const key in this.#state) readonlyState[key] = this.#state[key].asReadonly();
+
     return readonlyState as ReadonlyState<T>;
   }
 }

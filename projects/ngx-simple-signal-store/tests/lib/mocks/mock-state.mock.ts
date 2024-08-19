@@ -1,6 +1,6 @@
-import { MockState } from '../interfaces/mock-state.interface';
+import { MockState } from './mock-state.interface';
 
-export const initialData: MockState = {
+export const mockInitialData: MockState = {
   numberValue: 42,
   stingValue: 'forty-two',
   booleanValue: true,
