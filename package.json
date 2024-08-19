@@ -1,6 +1,7 @@
 {
   "name": "ngx-simple-signal-store",
-  "version": "1.0.3",
+  "version": "1.0.4",
+  "license": "MIT",
   "scripts": {
     "ng": "ng",
     "build": "ng build ngx-simple-signal-store && npm run copy",
