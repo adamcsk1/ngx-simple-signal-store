@@ -25,7 +25,7 @@ A simple way to create signal stores with a read-only interface.
 
 ## Table of contents
 
-- [Install](#install)
+- [Installation](#installation)
 - [Usage](#usage)
   - [Create global store](#create-global-store)
   - [Create-component store](#create-component-store)
