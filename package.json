@@ -1,13 +1,14 @@
 {
   "name": "ngx-simple-signal-store",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "ng": "ng",
-    "build": "ng build ngx-simple-signal-store",
+    "build": "ng build ngx-simple-signal-store && npm run copy",
     "publish": "cd ./dist/ngx-simple-signal-store && npm publish",
     "test": "ng test",
     "eslint": "eslint ./projects/ngx-simple-signal-store/",
     "eslint:fix": "eslint  ./projects/ngx-simple-signal-store/ --fix",
+    "copy": "node scripts/copy.js",
     "prepare": "husky"
   },
   "private": true,
