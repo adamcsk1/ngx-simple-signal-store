@@ -83,14 +83,14 @@ export interface DemoComponentState {
   theAnswerToEverything: number;
 }
 
-export const initialDemoState: DemoComponentState = {
+export const initialDemoComponentState: DemoComponentState = {
   theAnswerToEverything: 42
 };
 
 export const demoComponentStateToken = createInjectionToken<DemoComponentState>();
 
 @Component({
-  providers: [provideStore(initialDemoState, demoComponentStateToken)]
+  providers: [provideStore(initialDemoComponentState, demoComponentStateToken)]
 })
 export class DemoComponent {
   readonly #demoComponentStore = inject(demoComponentStateToken);
@@ -117,7 +117,7 @@ demoStore.setState('key', 0);
 
 Sets the sate with a specified key and value.
 
-## patchStateState<K extends keyof T>(key: K, data: T[K]): `void`;
+## patchState<K extends keyof T>(key: K, data: T[K] | Partial<T[K]>): `void`;
 
 ```typescript
 // primitive:

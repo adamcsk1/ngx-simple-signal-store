@@ -1,6 +1,6 @@
 {
   "name": "ngx-simple-signal-store",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "scripts": {
     "ng": "ng",
     "build": "ng build ngx-simple-signal-store && npm run copy",
