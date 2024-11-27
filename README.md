@@ -34,7 +34,7 @@ A simple way to create signal stores with a read-only interface.
 ## Installation
 
 ```bash
-npm ngx-simple-signal-store
+npm install ngx-simple-signal-store
 # Or if you use yarn
 yarn add ngx-simple-signal-store
 ```

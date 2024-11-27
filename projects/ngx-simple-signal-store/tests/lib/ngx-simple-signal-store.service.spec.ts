@@ -132,6 +132,21 @@ describe('NgxSimpleSignalStoreService', () => {
       expect(store.state.objectValue()).toEqual(jasmine.objectContaining(newValue));
     });
 
+    it('should patch state ignore known the objects when the patch comes from a callback function', () => {
+      const callbackSpy = jasmine.createSpy();
+      createTestEffect(() => {
+        store.state.objectValue();
+        callbackSpy();
+      });
+
+      const newValue = { test: 'triple zero' };
+      store.patchState('objectValue', (state) => ({ ...state, ...newValue }));
+      TestBed.flushEffects();
+      store.patchState('objectValue', (state) => ({ ...state, ...newValue }));
+      TestBed.flushEffects();
+      expect(callbackSpy).toHaveBeenCalledTimes(1);
+    });
+
     it('should effect works', (done) => {
       const newValue = { test: 'double zero' };
       createTestEffect(
