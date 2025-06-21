@@ -14,10 +14,18 @@ A simple way to create signal stores with a read-only interface.
   <tbody>
     <tr>
       <td>
+        3.x
+      </td>
+      <td>
+        >= 20
+      </td>
+    </tr>
+    <tr>
+      <td>
         2.x
       </td>
       <td>
-        >= 19
+        19.x.x
       </td>
     </tr>
     <tr>
@@ -25,7 +33,7 @@ A simple way to create signal stores with a read-only interface.
         1.x
       </td>
       <td>
-        >= 18
+        18.x.x
       </td>
     </tr>
   </tbody>
