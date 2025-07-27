@@ -1,6 +1,6 @@
 import { signal } from '@angular/core';
 import { ReadonlyState, State, StateCallback, StateData } from './ngx-simple-signal-store.interface';
-import isEqual from 'lodash.isequal';
+import equal from 'fast-deep-equal';
 
 export class NgxSimpleSignalStoreService<T> {
   readonly #initialState: T;
@@ -37,7 +37,7 @@ export class NgxSimpleSignalStoreService<T> {
 
   #createState(): State<T> {
     const state: Partial<State<T>> = {};
-    for (const key in this.#initialState) state[key] = signal(this.#initialState[key], { equal: isEqual });
+    for (const key in this.#initialState) state[key] = signal(this.#initialState[key], { equal });
 
     return state as State<T>;
   }
