@@ -1,6 +1,6 @@
 import { signal } from '@angular/core';
 import { ReadonlyState, State, StateCallback, StateData } from './ngx-simple-signal-store.interface';
-import equal from 'fast-deep-equal';
+import equal from 'fast-deep-equal/es6';
 
 export class NgxSimpleSignalStoreService<T> {
   readonly #initialState: T;
