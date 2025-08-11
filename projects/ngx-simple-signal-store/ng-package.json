@@ -3,5 +3,6 @@
   "dest": "../../dist/ngx-simple-signal-store",
   "lib": {
     "entryFile": "src/public-api.ts"
-  }
+  },
+  "allowedNonPeerDependencies": ["deep-equal-util"]
 }
