@@ -76,7 +76,7 @@ describe('NgxSimpleSignalStoreService', () => {
           done();
         }),
       );
-      TestBed.flushEffects();
+      TestBed.tick();
       store.setState('numberValue', -11);
     });
   });
@@ -141,9 +141,9 @@ describe('NgxSimpleSignalStoreService', () => {
 
       const newValue = { test: 'triple zero' };
       store.patchState('objectValue', (state) => ({ ...state, ...newValue }));
-      TestBed.flushEffects();
+      TestBed.tick();
       store.patchState('objectValue', (state) => ({ ...state, ...newValue }));
-      TestBed.flushEffects();
+      TestBed.tick();
       expect(callbackSpy).toHaveBeenCalledTimes(1);
     });
 
@@ -155,7 +155,7 @@ describe('NgxSimpleSignalStoreService', () => {
           done();
         }),
       );
-      TestBed.flushEffects();
+      TestBed.tick();
       store.patchState('objectValue', (state) => ({ ...state, ...newValue }));
     });
 
@@ -164,7 +164,7 @@ describe('NgxSimpleSignalStoreService', () => {
       const callbackSpy = jasmine.createSpy();
       createTestEffect(skipOne(store.state.objectValue, callbackSpy));
       createTestEffect(skipOne(store.state.arrayValue, callbackSpy));
-      TestBed.flushEffects();
+      TestBed.tick();
       store.patchState('objectValue', (state) => ({ ...state, ...newValue }));
       tick();
       expect(callbackSpy).toHaveBeenCalledTimes(1);

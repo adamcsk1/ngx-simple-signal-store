@@ -2,51 +2,6 @@
 
 A simple way to create signal stores with a read-only interface.
 
-## Compatibility with Angular Versions
-
-<table>
-  <thead>
-    <tr>
-      <th>ngx-simple-signal-store</th>
-      <th>Angular</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>
-        3.x
-      </td>
-      <td>
-        >= 20
-      </td>
-    </tr>
-    <tr>
-      <td>
-        2.x
-      </td>
-      <td>
-        19.x.x
-      </td>
-    </tr>
-    <tr>
-      <td>
-        1.x
-      </td>
-      <td>
-        18.x.x
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-## Table of contents
-
-- [Installation](#installation)
-- [Usage](#usage)
-  - [Create global store](#create-global-store)
-  - [Create component store](#create-component-store)
-- [API](#api)
-
 ## Installation
 
 ```bash
@@ -166,3 +121,48 @@ demoStore.resetStore();
 ```
 
 Reset the store to the initial state.
+
+## Compatibility with Angular Versions
+
+<table>
+  <thead>
+    <tr>
+      <th>ngx-simple-signal-store</th>
+      <th>Angular</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        -
+      </td>
+      <td>
+        Newer versions follow Angular’s versioning format.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        3.x
+      </td>
+      <td>
+        >= 20
+      </td>
+    </tr>
+    <tr>
+      <td>
+        2.x
+      </td>
+      <td>
+        19.x.x
+      </td>
+    </tr>
+    <tr>
+      <td>
+        1.x
+      </td>
+      <td>
+        18.x.x
+      </td>
+    </tr>
+  </tbody>
+</table>

@@ -1,9 +1,9 @@
 {
   "name": "ngx-simple-signal-store",
-  "version": "3.0.5",
+  "version": "21.0.0",
   "license": "MIT",
   "peerDependencies": {
-    "@angular/core": "^20.3.15"
+    "@angular/core": "^21.0.3"
   },
   "dependencies": {
     "tslib": "^2.3.0",
