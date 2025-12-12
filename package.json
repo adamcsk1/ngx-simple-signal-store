@@ -6,7 +6,8 @@
     "ng": "ng",
     "build": "ng build ngx-simple-signal-store && npm run copy",
     "publish": "cd ./dist/ngx-simple-signal-store && npm publish",
-    "test": "ng test",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "eslint": "eslint ./projects/ngx-simple-signal-store/",
     "eslint:fix": "eslint  ./projects/ngx-simple-signal-store/ --fix",
     "copy": "node scripts/copy.js",
@@ -28,21 +29,18 @@
     "zone.js": "~0.16.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^21.0.2",
-    "@angular/cli": "^21.0.2",
+    "@angular-devkit/build-angular": "^21.0.3",
+    "@angular/cli": "^21.0.3",
     "@angular/compiler-cli": "^21.0.3",
-    "@types/jasmine": "~5.1.13",
+    "@types/node": "^22.9.3",
     "angular-eslint": "21.0.1",
-    "eslint": "^9.15.0",
+    "eslint": "^9.39.1",
     "husky": "^9.1.7",
-    "jasmine-core": "~5.13.0",
-    "karma": "~6.4.4",
-    "karma-chrome-launcher": "~3.2.0",
-    "karma-coverage": "~2.2.1",
-    "karma-jasmine": "~5.1.0",
-    "karma-jasmine-html-reporter": "~2.1.0",
     "ng-packagr": "^21.0.0",
     "prettier": "^3.7.4",
-    "typescript": "~5.9.3"
+    "typescript": "~5.9.3",
+    "vitest": "^4.0.9",
+    "@vitest/coverage-v8": "^4.0.9",
+    "jsdom": "^25.0.1"
   }
 }

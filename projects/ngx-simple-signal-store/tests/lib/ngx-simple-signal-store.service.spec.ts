@@ -1,4 +1,4 @@
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { Injector, Signal, effect, runInInjectionContext } from '@angular/core';
 import { createInjectionToken, NgxSimpleSignalStoreService, provideStore } from '../../src/public-api';
@@ -6,6 +6,7 @@ import { MockState } from './mocks/mock-state.interface';
 import { MockStateOther } from './mocks/mock-state-other.interface';
 import { mockInitialData } from './mocks/mock-state.mock';
 import { mockInitialOtherData } from './mocks/mock-state-other.mock';
+import { describe, beforeEach, it, expect, vi } from 'vitest';
 
 describe('NgxSimpleSignalStoreService', () => {
   let store: NgxSimpleSignalStoreService<MockState>;
@@ -69,15 +70,17 @@ describe('NgxSimpleSignalStoreService', () => {
       expect(store.state.objectValue()).toEqual(newValue);
     });
 
-    it('should effect works', (done) => {
-      createTestEffect(
-        skipOne(store.state.numberValue, (value: number) => {
-          expect(value).toEqual(-11);
-          done();
-        }),
-      );
-      TestBed.tick();
-      store.setState('numberValue', -11);
+    it('should effect works', () => {
+      return new Promise<void>((resolve) => {
+        createTestEffect(
+          skipOne(store.state.numberValue, (value: number) => {
+            expect(value).toEqual(-11);
+            resolve();
+          }),
+        );
+        TestBed.tick();
+        store.setState('numberValue', -11);
+      });
     });
   });
 
@@ -95,7 +98,7 @@ describe('NgxSimpleSignalStoreService', () => {
     it('should patch array value', () => {
       const newValue = [{ test: 'zero2' }];
       store.patchState('arrayValue', newValue);
-      expect(store.state.arrayValue()).toEqual(jasmine.arrayContaining(newValue));
+      expect(store.state.arrayValue()).toEqual(expect.arrayContaining(newValue));
     });
 
     it('should patch object test value', () => {
@@ -129,11 +132,11 @@ describe('NgxSimpleSignalStoreService', () => {
     it('should patch state by the callback function', () => {
       const newValue = { test: 'double zero' };
       store.patchState('objectValue', (state) => ({ ...state, ...newValue }));
-      expect(store.state.objectValue()).toEqual(jasmine.objectContaining(newValue));
+      expect(store.state.objectValue()).toEqual(expect.objectContaining(newValue));
     });
 
     it('should patch state ignore known the objects when the patch comes from a callback function', () => {
-      const callbackSpy = jasmine.createSpy();
+      const callbackSpy = vi.fn();
       createTestEffect(() => {
         store.state.objectValue();
         callbackSpy();
@@ -147,28 +150,32 @@ describe('NgxSimpleSignalStoreService', () => {
       expect(callbackSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('should effect works', (done) => {
+    it('should effect works', () => {
       const newValue = { test: 'double zero' };
-      createTestEffect(
-        skipOne(store.state.objectValue, (value: typeof newValue) => {
-          expect(value).toEqual(jasmine.objectContaining(newValue));
-          done();
-        }),
-      );
-      TestBed.tick();
-      store.patchState('objectValue', (state) => ({ ...state, ...newValue }));
+      return new Promise<void>((resolve) => {
+        createTestEffect(
+          skipOne(store.state.objectValue, (value: typeof newValue) => {
+            expect(value).toEqual(expect.objectContaining(newValue));
+            resolve();
+          }),
+        );
+        TestBed.tick();
+        store.patchState('objectValue', (state) => ({ ...state, ...newValue }));
+      });
     });
 
-    it('should state change does not trigger other signal effects', fakeAsync(() => {
+    it('should state change does not trigger other signal effects', () => {
       const newValue = { test: 'double zero' };
-      const callbackSpy = jasmine.createSpy();
-      createTestEffect(skipOne(store.state.objectValue, callbackSpy));
-      createTestEffect(skipOne(store.state.arrayValue, callbackSpy));
+      const objectSpy = vi.fn();
+      const arraySpy = vi.fn();
+      createTestEffect(skipOne(store.state.objectValue, objectSpy));
+      createTestEffect(skipOne(store.state.arrayValue, arraySpy));
       TestBed.tick();
       store.patchState('objectValue', (state) => ({ ...state, ...newValue }));
-      tick();
-      expect(callbackSpy).toHaveBeenCalledTimes(1);
-    }));
+      TestBed.tick();
+      expect(objectSpy).toHaveBeenCalledTimes(1);
+      expect(arraySpy).not.toHaveBeenCalled();
+    });
   });
 
   describe('with more store', () => {
