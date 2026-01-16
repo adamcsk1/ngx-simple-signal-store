@@ -12,8 +12,10 @@ describe('NgxSimpleSignalStoreService', () => {
   let store: NgxSimpleSignalStoreService<MockState>;
   let otherStore: NgxSimpleSignalStoreService<MockStateOther>;
   let injector: Injector;
+  let equalSpy: ReturnType<typeof vi.fn>;
   const stateToken = createInjectionToken<MockState>('MockState');
   const otherStateToken = createInjectionToken<MockStateOther>('MockStateOther');
+  const customToken = createInjectionToken<MockState>('CustomEqualState');
   const createTestEffect = (callback: () => void) => runInInjectionContext(injector, () => effect(callback));
   const skipOne = <T>(signal: Signal<T>, callback: (value: T) => void) => {
     let first = true;
@@ -26,10 +28,17 @@ describe('NgxSimpleSignalStoreService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideStore(mockInitialData, stateToken), provideStore(mockInitialOtherData, otherStateToken)],
+      providers: [
+        provideStore(mockInitialData, stateToken),
+        provideStore(mockInitialOtherData, otherStateToken),
+        provideStore(mockInitialData, customToken, {
+          equal: (...args) => equalSpy(...args),
+        }),
+      ],
     });
     store = TestBed.inject(stateToken);
     otherStore = TestBed.inject(otherStateToken);
+    equalSpy = vi.fn(() => true);
     injector = TestBed.inject(Injector);
   });
 
@@ -176,6 +185,11 @@ describe('NgxSimpleSignalStoreService', () => {
       expect(objectSpy).toHaveBeenCalledTimes(1);
       expect(arraySpy).not.toHaveBeenCalled();
     });
+
+    it('should throw when key is invalid', () => {
+      expect(() => store.setState('missing' as keyof MockState, 1 as never)).toThrowError();
+      expect(() => store.patchState('missing' as keyof MockState, 1 as never)).toThrowError();
+    });
   });
 
   describe('with more store', () => {
@@ -205,6 +219,38 @@ describe('NgxSimpleSignalStoreService', () => {
         arrayValue: store.state.arrayValue(),
         objectValue: store.state.objectValue(),
       }).toEqual(mockInitialData);
+    });
+  });
+
+  describe('getValue and select', () => {
+    it('should getValue return latest value synchronously', () => {
+      store.setState('numberValue', 99);
+      expect(store.getValue('numberValue')).toBe(99);
+    });
+
+    it('select should emit derived signal and respect custom comparer', () => {
+      const derivedEqual = vi.fn(() => true);
+      const doubled = store.select((s) => s.numberValue() * 2, derivedEqual);
+      const derivedSpy = vi.fn();
+      createTestEffect(skipOne(doubled, derivedSpy));
+      TestBed.tick();
+      store.setState('numberValue', 100);
+      TestBed.tick();
+      expect(derivedEqual).toHaveBeenCalled();
+      expect(derivedSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('store options equality', () => {
+    it('should use custom equality comparer to suppress emissions', () => {
+      const customStore = TestBed.inject(customToken);
+      const spy = vi.fn();
+      createTestEffect(skipOne(customStore.state.numberValue, spy));
+      TestBed.tick();
+      customStore.setState('numberValue', 123);
+      TestBed.tick();
+      expect(equalSpy).toHaveBeenCalled();
+      expect(spy).not.toHaveBeenCalled();
     });
   });
 });

@@ -1,126 +1,135 @@
-# NgxSimpleSignalStore
+# Ngx Simple Signal Store
 
-A simple way to create signal stores with a read-only interface.
+Tiny helper for wiring Angular Signal-based stores with a read-only interface and a minimal API.
+
+## Highlights
+- Read-only Signal access for every state slice; mutations stay inside the store.
+- Type-safe tokens and providers for both app-wide and component-scoped stores.
+- `setState`, `patchState`, and `resetStore` with merge semantics for primitives, objects, and arrays.
+- Structural equality via configurable comparer (defaults to `dequal`) to avoid unnecessary Signal emissions.
+- Zero extra dependencies beyond Angular; ships as a small utility.
 
 ## Installation
 
 ```bash
 npm install ngx-simple-signal-store
-# Or if you use yarn
-yarn add ngx-simple-signal-store
 ```
-## Usage
 
-### Create global store
+## Quick start (global store)
 
-Add the store provider with an initial state and a unique token to your app.config.ts as a provider:
+Create (or let default) a token, provide the store, then inject and use it:
+
 ```ts
+// app.config.ts
+import { ApplicationConfig, inject } from '@angular/core';
 import { createInjectionToken, provideStore } from 'ngx-simple-signal-store';
 
 export interface DemoState {
   theAnswerToLife: number;
 }
 
-export const initialDemoState: DemoState = {
-  theAnswerToLife: 42
+const initialDemoState: DemoState = {
+  theAnswerToLife: 42,
 };
 
-export const demoStateToken = createInjectionToken<DemoState>();
+// Pass a name (useful in dev tools) or omit to use the default label
+export const demoStateToken = createInjectionToken<DemoState>('demoState');
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideStore(initialDemoState, demoStateToken),
+    provideStore(initialDemoState, demoStateToken, {
+      // Optional: override equality comparer for all signals in this store
+      equal: (a, b) => a === b,
+    }),
   ],
 };
 ```
 
-Then, import and inject it into your components:
 ```ts
-import { demoStateToken } from './app.config.ts';
-
-@Component({})
-export class DemoComponent {
-  readonly #demoStore = inject(demoStateToken);
-}
-```
-
-### Create component store
-
-Add the store provider with an initial state and a unique token to your component as a provider:
-```ts
-import { createInjectionToken, provideStore } from 'ngx-simple-signal-store';
-
-export interface DemoComponentState {
-  theAnswerToEverything: number;
-}
-
-export const initialDemoComponentState: DemoComponentState = {
-  theAnswerToEverything: 42
-};
-
-export const demoComponentStateToken = createInjectionToken<DemoComponentState>();
+// demo.component.ts
+import { Component, inject } from '@angular/core';
+import { demoStateToken } from './app.config';
 
 @Component({
-  providers: [provideStore(initialDemoComponentState, demoComponentStateToken)]
+  selector: 'app-demo',
+  template: `The answer is {{ demoState.state.theAnswerToLife() }}`,
 })
 export class DemoComponent {
-  readonly #demoComponentStore = inject(demoComponentStateToken);
+  readonly demoState = inject(demoStateToken);
+
+  bump(): void {
+    this.demoState.patchState('theAnswerToLife', (value) => value + 1);
+  }
+
+  // Derived read-only signal
+  readonly doubled = this.demoState.select((s) => s.theAnswerToLife() * 2);
+
+  // Synchronous read (non-reactive)
+  logNow(): void {
+    console.log(this.demoState.getValue('theAnswerToLife'));
+  }
 }
 ```
 
-### API
+## Component-scoped store
 
-**T** is the type of the state.
+Provide a store only for a component subtree:
 
-## state: `{ [K in keyof T]: Signal<T[K]> }`;
+```ts
+import { Component, inject } from '@angular/core';
+import { createInjectionToken, provideStore } from 'ngx-simple-signal-store';
 
-```typescript
-const cookieExists: boolean = demoStore.state;
+interface CounterState {
+  count: number;
+}
+
+const initialCounterState: CounterState = { count: 0 };
+const counterStateToken = createInjectionToken<CounterState>('counterState');
+
+@Component({
+  selector: 'app-counter',
+  template: `Count: {{ counterStore.state.count() }}`,
+  providers: [provideStore(initialCounterState, counterStateToken)],
+})
+export class CounterComponent {
+  readonly counterStore = inject(counterStateToken);
+
+  increment(): void {
+    this.counterStore.patchState('count', (current) => current + 1);
+  }
+}
 ```
 
-Return with the readonly state. The returned object keys are the referenced state keys, and the values are  the read-only signals.
+## API
 
-## setState<K extends keyof T>(key: K, data: T[K]): `void`;
+**Store shape**
+- `state: { [K in keyof T]: Signal<T[K]> }` — read-only Signals for each state key; read with `store.state.key()`.
 
-```typescript
-demoStore.setState('key', 0);
-```
+**getValue<K extends keyof T>(key): T[K]**
+- Synchronously read the current value of one state key.
 
-Sets the state with a specified key and value.
+**setState<K extends keyof T>(key, value): void**
+- Replace a single state key with an exact value.
+- Example: `store.setState('count', 10);`
 
-## patchState<K extends keyof T>(key: K, data: T[K] | Partial<T[K]>): `void`;
+**patchState<K extends keyof T>(key, value | partial | callback): void**
+- Primitives: overwrite (`store.patchState('flag', true);`).
+- Arrays: append (`store.patchState('items', ['new']);`).
+- Objects: shallow merge (`store.patchState('user', { name: 'Neo' });`).
+- Callback: receives a cloned snapshot and returns the next value (`store.patchState('count', (c) => c + 1);`).
 
-```typescript
-// primitive:
-demoStore.patchState('key', 0);
-// The value before patch: 1
-// The value after patch:  0
+**resetStore(): void**
+- Restore the initial state for every key.
 
-// array:
-demoStore.patchState('key', [3]);
-// The value before patch: [1, 2]
-// The value after patch:  [1, 2, 3]
+**select(project, equal?): Signal<U>**
+- Create a derived Signal from the read-only state; optionally pass a comparer (defaults to `dequal`).
 
-// object:
-demoStore.patchState('key', {value: 0});
-// The value before patch: {value: 1}
-// The value after patch:  {value: 0}
-```
+**Utilities**
+- `createInjectionToken<T>(name?: string)` — creates a typed token; name defaults to `NgxSimpleSignalStore`.
+- `provideStore<T>(initialState: T, token: InjectionToken<NgxSimpleSignalStoreService<T>>, options?: { equal?: (a, b) => boolean })` — provider factory with optional equality comparer for Signal emissions.
 
-Patch the state with a specified key and value.
-
-A callback function can be used for the complex operations:
-
-```typescript
-demoStore.patchState('key', state => ({value: state.value + 1}));
-```
-## resetStore(): `void`;
-
-```typescript
-demoStore.resetStore();
-```
-
-Reset the store to the initial state.
+**Notes on equality**
+- The default comparer is `dequal`. Override per store via `options.equal` or per derived signal via the `select` second argument.
 
 ## Compatibility with Angular Versions
 

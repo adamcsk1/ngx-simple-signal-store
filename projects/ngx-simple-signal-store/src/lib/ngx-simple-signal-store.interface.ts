@@ -11,3 +11,7 @@ export type ReadonlyState<T> = {
 export type StateData<T, K extends keyof T> = Partial<T[K]> | T[K];
 
 export type StateCallback<T, K extends keyof T> = (state: T[K]) => T[K];
+
+export interface StoreOptions<T> {
+  equal?: <K extends keyof T>(a: T[K], b: T[K]) => boolean;
+}
