@@ -20,7 +20,7 @@ export class NgxSimpleSignalStoreService<T> {
   public patchState<K extends keyof T>(key: K, arg: StateCallback<T, K> | StateData<T, K>): void {
     const selectedState = this.#selectState(key);
     if (typeof arg === 'function') {
-      selectedState.update((state) => (arg as StateCallback<T, K>)(this.#cloneValue(state)));
+      selectedState.update((state) => (arg as StateCallback<T, K>)(structuredClone(state)));
       return;
     }
 
@@ -67,11 +67,5 @@ export class NgxSimpleSignalStoreService<T> {
   #selectState<K extends keyof T>(key: K): State<T>[K] {
     if (!(key in this.#state)) throw new Error(`State key "${String(key)}" is not defined in the store.`);
     return this.#state[key];
-  }
-
-  #cloneValue<V>(value: V): V {
-    if (Array.isArray(value)) return [...value] as V;
-    if (value !== null && typeof value === 'object') return { ...(value as object) } as V;
-    return value;
   }
 }
