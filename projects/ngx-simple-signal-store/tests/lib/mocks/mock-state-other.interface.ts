@@ -1,4 +1,4 @@
 export interface MockStateOther {
-  stingValue: string;
+  stringValue: string;
   otherStringValue: string;
 }

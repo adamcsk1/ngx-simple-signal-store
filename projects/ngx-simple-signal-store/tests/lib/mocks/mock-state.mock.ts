@@ -2,7 +2,7 @@ import { MockState } from './mock-state.interface';
 
 export const mockInitialData: MockState = {
   numberValue: 42,
-  stingValue: 'forty-two',
+  stringValue: 'forty-two',
   booleanValue: true,
   arrayValue: [{ test: 'forty-two' }],
   objectValue: {

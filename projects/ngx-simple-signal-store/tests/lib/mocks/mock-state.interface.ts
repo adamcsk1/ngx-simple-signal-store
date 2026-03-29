@@ -1,6 +1,6 @@
 export interface MockState {
   numberValue: number;
-  stingValue: string;
+  stringValue: string;
   booleanValue: boolean;
   arrayValue: { test: string }[];
   objectValue: {

@@ -12,7 +12,7 @@ describe('NgxSimpleSignalStoreService', () => {
   let store: NgxSimpleSignalStoreService<MockState>;
   let otherStore: NgxSimpleSignalStoreService<MockStateOther>;
   let injector: Injector;
-  let equalSpy: ReturnType<typeof vi.fn>;
+  let equalSpy = vi.fn<(a: unknown, b: unknown) => boolean>(() => true);
   const stateToken = createInjectionToken<MockState>('MockState');
   const otherStateToken = createInjectionToken<MockStateOther>('MockStateOther');
   const customToken = createInjectionToken<MockState>('CustomEqualState');
@@ -47,7 +47,7 @@ describe('NgxSimpleSignalStoreService', () => {
   it('should initial data available from the state', () =>
     expect({
       numberValue: store.state.numberValue(),
-      stingValue: store.state.stingValue(),
+      stringValue: store.state.stringValue(),
       booleanValue: store.state.booleanValue(),
       arrayValue: store.state.arrayValue(),
       objectValue: store.state.objectValue(),
@@ -60,8 +60,8 @@ describe('NgxSimpleSignalStoreService', () => {
     });
 
     it('should set string value', () => {
-      store.setState('stingValue', '0');
-      expect(store.state.stingValue()).toEqual('0');
+      store.setState('stringValue', '0');
+      expect(store.state.stringValue()).toEqual('0');
     });
 
     it('should set array value', () => {
@@ -100,8 +100,8 @@ describe('NgxSimpleSignalStoreService', () => {
     });
 
     it('should patch string value', () => {
-      store.patchState('stingValue', '0');
-      expect(store.state.stingValue()).toEqual('0');
+      store.patchState('stringValue', '0');
+      expect(store.state.stringValue()).toEqual('0');
     });
 
     it('should patch array value', () => {
@@ -196,25 +196,25 @@ describe('NgxSimpleSignalStoreService', () => {
     it('should be created', () => expect(otherStore).toBeTruthy());
 
     it('should other instance works too', () => {
-      store.setState('stingValue', '0');
-      expect(store.state.stingValue()).toEqual('0');
-      expect(otherStore.state.stingValue()).toEqual('sad-panda');
-      otherStore.setState('stingValue', 'happy-panda');
-      expect(store.state.stingValue()).toEqual('0');
-      expect(otherStore.state.stingValue()).toEqual('happy-panda');
+      store.setState('stringValue', '0');
+      expect(store.state.stringValue()).toEqual('0');
+      expect(otherStore.state.stringValue()).toEqual('sad-panda');
+      otherStore.setState('stringValue', 'happy-panda');
+      expect(store.state.stringValue()).toEqual('0');
+      expect(otherStore.state.stringValue()).toEqual('happy-panda');
     });
   });
 
   describe('resetStore', () => {
     it('should reset store to the initial state', () => {
       store.setState('numberValue', 0);
-      store.setState('stingValue', '0');
+      store.setState('stringValue', '0');
       store.patchState('arrayValue', [{ test: 'zero2' }]);
       store.patchState('objectValue', { test: 'zero' });
       store.resetStore();
       expect({
         numberValue: store.state.numberValue(),
-        stingValue: store.state.stingValue(),
+        stringValue: store.state.stringValue(),
         booleanValue: store.state.booleanValue(),
         arrayValue: store.state.arrayValue(),
         objectValue: store.state.objectValue(),
