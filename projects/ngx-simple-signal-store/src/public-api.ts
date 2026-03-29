@@ -4,4 +4,4 @@
 
 export * from './lib/ngx-simple-signal-store.service';
 export * from './lib/ngx-simple-signal-store.util';
-export { State, ReadonlyState } from './lib/ngx-simple-signal-store.interface';
+export { State, ReadonlyState, StoreOptions, StateCallback } from './lib/ngx-simple-signal-store.interface';
